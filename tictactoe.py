@@ -6,13 +6,31 @@ def tic():
     global count
     count = 1
     global l
+    global score_1
+    global score_2
+    score_1 = 0
+    score_2 = 0
     l = list('a b c d e f g h i'.split())
     global window
     window = tkinter.Tk()
+    #window.geometry("520x540")
     window.title("Tic Tac Toe")
     window.resizable(0,0)
     #window.geometry('438x472') for all 9 squares and #146x158 for each square 
-    
+
+    def result(score_1,score_2):
+        head = tkinter.Label(window,text='Score Table:',font=('Arial Italic',15),bg='#D5D5D5',width='15',height=3)
+        score_1_lb = tkinter.Label(window,text='Player1',font=('Arial Bold',20),bg='white',relief='ridge',width='10')
+        score_2_lb = tkinter.Label(window, text='Player2', font=('Arial Bold', 20), bg='white', relief="ridge", width=10)
+        val1 = tkinter.Label(window,text=str(score_1), font=('Arial Bold', 20), bg='white',relief='ridge',width='10')
+        val2 = tkinter.Label(window,text=str(score_2), font=('Arial Bold', 20), bg='white',relief='ridge',width='10')
+
+        head.grid(row=3,column=0,rowspan=2)
+        score_1_lb.grid(row=3,column=1)
+        score_2_lb.grid(row=3,column=2)
+        val1.grid(row=4,column=1)
+        val2.grid(row=4,column=2)
+
     
     def chg(event,r,c): 
     # method to responds after a click event
@@ -20,23 +38,34 @@ def tic():
         global count
         if ((count%2)==0):
             b = tkinter.Label(window,text='O',font=('Arial Bold',105),width=2,height=1,bd=0,fg='red')
+            #b = tkinter.Button(window, text='X',font=('Arial Bold',50),fg='black', bg='#CECCCC', bd=0, width=0, height=0)
             b.grid(row=r,column=c)
             validate(r,c,2)
         else:
             b = tkinter.Label(window,text='X',font=('Arial Bold',105),width=2,height=1,bd=0,fg='black')
+            #b = tkinter.Button(window, text='O',font=('Arial Bold',50), fg='red', bg='#CECCCC', bd=0, width=0, height=0)
             b.grid(row=r,column=c)
             validate(r,c,1)
-        
+
         
         
     def validate(r,c,player):
         a = r*3+c
         global l
         global count
+        global score_1
+        global score_2
         l[a] = player
         if(((l[0]==l[1])&(l[1]==l[2]))| ((l[0]==l[4])&(l[4]==l[8]))| ((l[0]==l[3])&(l[3]==l[6]))| ((l[3]==l[4])&(l[4]==l[5]))| ((l[1]==l[4])&(l[4]==l[7]))|   ((l[2]==l[5])&(l[5]==l[8]))| ((l[6]==l[7])&(l[7]==l[8]))| ((l[2]==l[4])&(l[4]==l[6]))):
             messagebox.showinfo('Congrats','Player '+str(player)+' wins' )
-            window.destroy()
+            if(player == 1):
+                score_1+= 1
+            else:
+                score_2+= 1
+
+            #window.destroy()
+            count=1
+            result(score_1,score_2)
             
         count = count + 1
         if (count==10):
@@ -84,8 +113,7 @@ def tic():
     window.mainloop()
     
 if __name__ == '__main__':
-	for i in range(1,5):
-		tic()
+	tic()
     
 
 

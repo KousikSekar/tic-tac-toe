@@ -49,7 +49,7 @@ def rule_change(event,cmnd):
     
 
 
-ins = tk.Label(window,font=('Arial Bold',18),text = "Place it consecutively to win",width=0,fg='black',bg='white')
+ins = tk.Label(window,font=('Arial',18),text = "Place it consecutively to win",width=0,fg='black',bg='white')
 
 prev_btn = tk.Button(window,anchor='e',image=prev_img,bd=0,bg='white')
 prev_btn.bind('<Button-1>',lambda event : rule_change(event,'prev'))

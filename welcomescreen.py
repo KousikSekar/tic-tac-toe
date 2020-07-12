@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from PIL import ImageTk, Image
+from tkinter import messagebox
 
 #This creates the main window of an application
 window = tk.Tk()
@@ -9,6 +10,14 @@ window.title("Join")
 window.geometry("520x470")
 window['bg'] = 'white'
 window.resizable(0,0)
+
+def areyousure(event):
+    response = messagebox.askquestion("Quit",message='Are you sure you want to quit')
+    print(response)
+    if(response == 'yes'):
+        window.destroy()
+
+
 
 
 wel_path = r"D:\learning\Python\tic-tac-toe\welcomescreenpng.png"
@@ -23,7 +32,7 @@ wel_img = ImageTk.PhotoImage(Image.open(wel_path))
 tic_img = ImageTk.PhotoImage(Image.open(tic_path))
 startgame = ImageTk.PhotoImage(Image.open(startgame_path))
 howtoplay = ImageTk.PhotoImage(Image.open(howtoplay_path))
-quit = ImageTk.PhotoImage(Image.open(quit_path))
+quit_img = ImageTk.PhotoImage(Image.open(quit_path))
 
 
 
@@ -33,7 +42,8 @@ tic_panel = tk.Label(window, image= tic_img,anchor='n',background='white',width=
 
 start_btn = tk.Button(window,image=startgame,bd=0,bg='white')
 howtoplay_btn = tk.Button(window,image=howtoplay,bd=0,bg='white')
-quit_btn = tk.Button(window,image=quit,bd=0,bg='white')
+quit_btn = tk.Button(window,image=quit_img,bd=0,bg='white')
+quit_btn.bind('<Button-1>',lambda event : areyousure(event))
 
 #done_by = tk.Label(window,text='-by Kousik',font=('Arial Bold',10),width=200,height=1,bd=0,fg='red',anchor='se',bg='white')
 
