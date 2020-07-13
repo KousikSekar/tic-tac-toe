@@ -18,9 +18,9 @@ def tic(matches,player1,player2):
     #window.geometry('438x472') for all 9 squares and #146x158 for each square 
 
     def result(score_1,score_2):
-        head = tkinter.Label(window,text='Score Table:',font=('Arial Italic',15),bg='#D5D5D5',width='14',height=3)
-        score_1_lb = tkinter.Label(window,text='Player1',font=('Arial Bold',20),bg='white',relief='ridge',width='10')
-        score_2_lb = tkinter.Label(window, text='Player2', font=('Arial Bold', 20), bg='white', relief="ridge", width=10)
+        head = tkinter.Label(window,text='Score Table:',font=('Arial Italic',13),bg='#D5D5D5',width='16',height=3)
+        score_1_lb = tkinter.Label(window,text=player1,font=('Arial Italic',13))
+        score_2_lb = tkinter.Label(window, text=player2, font=('Arial Italic', 13))
         val1 = tkinter.Label(window,text=str(score_1), font=('Arial Bold', 20), bg='white',relief='ridge',width='10')
         val2 = tkinter.Label(window,text=str(score_2), font=('Arial Bold', 20), bg='white',relief='ridge',width='10')
 
@@ -143,7 +143,21 @@ def tic(matches,player1,player2):
     window.mainloop()
     
 if __name__ == '__main__':
-	tic(3,'Ramesh','Suresh')
+    player1 = 'Rameshwaram123456'
+    player2 = ''
+
+    def transform(name,position):
+        if(len(name)>16):
+            name = str(name[:14])+'..'
+        elif(len(name)==0):
+            name = 'Player-'+str(position)
+        else:
+            name = name
+        return name
+    pl1 = transform(player1.strip(),1)
+    pl2 = transform(player2.strip(),2)
+    tic(3,pl1,pl2)
+
     
 
 
