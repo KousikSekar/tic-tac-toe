@@ -99,6 +99,22 @@ def tic(matches,player1,player2):
 
         match_no+=1
 
+        def endgame(event):
+            response = messagebox.askquestion("Quit", message='Are you sure you want to end this series, you will be navigated back to home screen')
+            print(response)
+            if (response == 'yes'):
+                if(score_1>score_2):
+                    winner = player1
+                    message = str(player1)+' wins the series'
+                elif(score_2>score_1):
+                    winner = player2
+                    message = str(player2) + ' wins the series'
+                else:
+                    message = 'The series is a draw'
+                messagebox.showinfo('Congrats to Champion',message)
+                window.destroy()
+
+
         #print("Count at board",count)
         b00 = tkinter.Button(window,fg='white',bg='white',bd=0,width=24,height=10)
         b00.grid(row=2,column=0)
@@ -137,14 +153,18 @@ def tic(matches,player1,player2):
         b22.grid(row=4,column=2)
         b22.bind('<Button-1>',lambda event : chg(event,4,2,f,s,fgf,fgs,pl1,pl2))
 
+        end_game = tkinter.Button(window,width=43,height=2,text='End Game',font=('Arial Bold',15),bd=3,relief='ridge')
+        end_game.grid(row=5,column=0,columnspan=3)
+        end_game.bind('<Button-1>',lambda event : endgame(event))
+
     board(player1,player2)
     result(score_1,score_2)
 
     window.mainloop()
     
 if __name__ == '__main__':
-    player1 = 'Rameshwaram123456'
-    player2 = ''
+    player1 = 'Donald Trump'
+    player2 = 'Vladimir Putin'
 
     def transform(name,position):
         if(len(name)>16):
