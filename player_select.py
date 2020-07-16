@@ -1,9 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import simpledialog
-
-
-from PIL import ImageTk, Image
 
 #This creates the main window of an application
 window = tk.Tk()
@@ -27,10 +23,10 @@ def getname(event,arg):
 
 head = tk.Label(window,text='VS',font=("Arial",50),bg='white')
 player_btn = tk.Button(window,text='Player',font=("Arial ",50),bg='white',fg='Black',width='10',bd=10)
-player_btn.bind('<Button-1>',lambda event: getname(event,'player'))
+player_btn.bind('<ButtonRelease-1>',lambda event: getname(event,'player'))
 
 comp_btn = tk.Button(window,text='Computer',font=("Arial ",50),bg='Black',fg='white',width='10',bd=10)
-comp_btn.bind('<Button-1>',lambda event : getname(event,'computer'))
+comp_btn.bind('<ButtonRelease-1>',lambda event : getname(event,'computer'))
 
 spin = tk.Spinbox(window,values=(1,2,3,4,5,6,7,8,9,10),width=5)
 space = tk.Label(window,text='*********',fg='white',bg='white')

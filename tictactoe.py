@@ -1,7 +1,8 @@
 import tkinter
 from tkinter import messagebox
 
-def tic(matches,player1,player2):
+
+def tic(series,player1,player2):
     #  class that contains the GUI and game responses
     global count , match_no , l , score_1 , score_2
     match_no = 1
@@ -35,13 +36,15 @@ def tic(matches,player1,player2):
     # method to responds after a click event
         event.widget.grid_forget()
         global count
-        print('count at chg',count)
+        #print('count at chg',count)
         if ((count%2)==0):
+            window.title('Tic-Tac-Toe    Series :'+str(series)+'  Game :'+str(match_no-1)+'   '+str(pl1)+' turn ')
             b = tkinter.Label(window,text=s,font=('Arial Bold',105),width=2,height=1,bd=0,fg=fgf)
             #b = tkinter.Button(window, text='X',font=('Arial Bold',50),fg='black', bg='#CECCCC', bd=0, width=0, height=0)
             b.grid(row=r,column=c)
             validate(r,c,pl2)
         else:
+            window.title('Tic-Tac-Toe    Series :'+str(series)+'  Game :'+str(match_no-1)+'   '+str(pl2)+' turn ')
             b = tkinter.Label(window,text=f,font=('Arial Bold',105),width=2,height=1,bd=0,fg=fgs)
             #b = tkinter.Button(window, text='O',font=('Arial Bold',50), fg='red', bg='#CECCCC', bd=0, width=0, height=0)
             b.grid(row=r,column=c)
@@ -57,28 +60,29 @@ def tic(matches,player1,player2):
         global score_2
         l[a] = player
         if(((l[0]==l[1])&(l[1]==l[2]))| ((l[0]==l[4])&(l[4]==l[8]))| ((l[0]==l[3])&(l[3]==l[6]))| ((l[3]==l[4])&(l[4]==l[5]))| ((l[1]==l[4])&(l[4]==l[7]))|   ((l[2]==l[5])&(l[5]==l[8]))| ((l[6]==l[7])&(l[7]==l[8]))| ((l[2]==l[4])&(l[4]==l[6]))):
-            messagebox.showinfo('Congrats',str(player)+' wins' )
+
             if(player == player1):
                 score_1+= 1
-                board(player1,player2)
                 count = 0
             else:
                 score_2+= 1
-                board(player1,player2)
                 count = 0
 
             #window.destroy()
             result(score_1,score_2)
-            
+            messagebox.showinfo('Congrats', str(player) + ' wins')
+            board(player1, player2)
+
         count = count + 1
+
         if (count==10):
-            messagebox.showinfo('Tie','That is a tie , well played')
             count = 1
-            board(player1,player2)
+            messagebox.showinfo('Tie', 'That is a tie , well played')
+            board(player1, player2)
             #window.destroy()
         
     def board(player1,player2):
-        window.title("Game")
+
         global l
         global match_no
         l = l = list('a b c d e f g h i'.split())
@@ -97,12 +101,9 @@ def tic(matches,player1,player2):
             pl1 = player1
             pl2 = player2
 
-        match_no+=1
 
-        def endgame(event):
-            response = messagebox.askquestion("Quit", message='Are you sure you want to end this series, you will be navigated back to home screen')
-            print(response)
-            if (response == 'yes'):
+
+        def series_end():
                 if(score_1>score_2):
                     winner = player1
                     message = str(player1)+' wins the series'
@@ -113,6 +114,17 @@ def tic(matches,player1,player2):
                     message = 'The series is a draw'
                 messagebox.showinfo('Congrats to Champion',message)
                 window.destroy()
+        def endgame(event):
+            response = messagebox.askquestion("Quit", message='Are you sure you want to end this series, you will be navigated back to home screen')
+            #print(response)
+            if(response=='yes'):
+                series_end()
+
+        match_no += 1
+        window.title('Tic-Tac-Toe    Series :' + str(series) + '  Game :' + str(match_no - 1) + '   ' + str(pl1) + ' turn ')
+        if(match_no>=series+2):
+            series_end()
+
 
 
         #print("Count at board",count)
@@ -176,7 +188,7 @@ if __name__ == '__main__':
         return name
     pl1 = transform(player1.strip(),1)
     pl2 = transform(player2.strip(),2)
-    tic(3,pl1,pl2)
+    tic(5,pl1,pl2)
 
     
 

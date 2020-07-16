@@ -1,6 +1,7 @@
 # how to play
 
 import tkinter as tk
+
 from PIL import ImageTk, Image
 
 #This creates the main window of an application
@@ -9,6 +10,7 @@ window.title("Join")
 window.geometry("520x470")
 window['bg'] = 'white'
 window.resizable(0,0)
+
 
 global rule
 global rules
@@ -52,10 +54,10 @@ def rule_change(event,cmnd):
 ins = tk.Label(window,font=('Arial',18),text = "Place it consecutively to win",width=0,fg='black',bg='white')
 
 prev_btn = tk.Button(window,anchor='e',image=prev_img,bd=0,bg='white')
-prev_btn.bind('<Button-1>',lambda event : rule_change(event,'prev'))
+prev_btn.bind('<ButtonRelease-1>',lambda event : rule_change(event,'prev'))
 
 next_btn = tk.Button(window,anchor='e',image=next_img,bd=0,bg='white')
-next_btn.bind('<Button-1>',lambda event : rule_change(event,'next'))
+next_btn.bind('<ButtonRelease-1>',lambda event : rule_change(event,'next'))
 
 gotit_btn = tk.Button(window,image=gotit_img,bd=0,bg='white')
 

@@ -1,8 +1,9 @@
 ## Welcome Screen
 
 import tkinter as tk
-from PIL import ImageTk, Image
 from tkinter import messagebox
+
+from PIL import ImageTk, Image
 
 #This creates the main window of an application
 window = tk.Tk()
@@ -42,8 +43,8 @@ tic_panel = tk.Label(window, image= tic_img,anchor='n',background='white',width=
 
 start_btn = tk.Button(window,image=startgame,bd=0,bg='white')
 howtoplay_btn = tk.Button(window,image=howtoplay,bd=0,bg='white')
-quit_btn = tk.Button(window,image=quit_img,bd=0,bg='white')
-quit_btn.bind('<Button-1>',lambda event : areyousure(event))
+quit_btn = tk.Button(image=quit_img,bd=0,bg='white')
+quit_btn.bind('<ButtonRelease-1>',lambda event : areyousure(event))
 
 #done_by = tk.Label(window,text='-by Kousik',font=('Arial Bold',10),width=200,height=1,bd=0,fg='red',anchor='se',bg='white')
 
