@@ -12,7 +12,7 @@ class SeaofBTCapp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title('Tic-Tac-Toe')
-
+        self.resizable(0, 0)
 
         container = tk.Frame(self)
 
@@ -23,7 +23,7 @@ class SeaofBTCapp(tk.Tk):
 
         self.frames = {}
 
-        for F in (WelcomeScreen, HowToPlay, PlayerSelect, TicTacToeBoard):
+        for F in (TicTacToeBoard, WelcomeScreen, HowToPlay, PlayerSelect):
             frame = F(container, self)
 
             self.frames[F] = frame
@@ -32,7 +32,7 @@ class SeaofBTCapp(tk.Tk):
 
         self.show_frame(WelcomeScreen)
 
-    def show_frame(self, cont, *args):
+    def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
 
@@ -41,6 +41,8 @@ class WelcomeScreen(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self['bg'] = 'white'
+        self.winfo_toplevel().title('Tic-Tac-Toe')
+        #self.winfo_toplevel().pack()
 
         def areyousure(event):
             response = messagebox.askquestion("Quit", message='Are you sure you want to quit')
@@ -110,11 +112,11 @@ class HowToPlay(tk.Frame):
             # global rule
             global labl
             # global labl
-            if (cmnd == 'prev'):
+            if cmnd == 'prev':
                 if (self.rule > 0):
                     self.rule = self.rule - 1
                     labl = tk.Label(self, image=self.rules[self.rule])
-            if (cmnd == 'next'):
+            if cmnd == 'next':
                 if (self.rule < 2):
                     self.rule = self.rule + 1
                     labl = tk.Label(self, image=self.rules[self.rule])
@@ -197,7 +199,7 @@ class TicTacToeBoard(tk.Frame):
         self.score_1 = 0
         self.score_2 = 0
         self.l = list('a b c d e f g h i'.split())
-        self.series = 3
+        self.series = 5
 
         self.player1 = 'Donald Trump'
         self.player2 = 'Vladimir Putin'
@@ -235,9 +237,9 @@ class TicTacToeBoard(tk.Frame):
         def chg(event, r, c, f, s, fgf, fgs, pl1, pl2):
             # method to responds after a click event
             event.widget.grid_forget()
-            #global count
+            # global count
             # print('count at chg',count)
-            if ((self.count % 2) == 0):
+            if (self.count % 2) == 0:
                 self.winfo_toplevel().title('Tic-Tac-Toe    Series :' + str(self.series) + '  Game :' +
                                             str(self.match_no - 1) + '   ' + str(pl1) + ' turn ')
                 b = tk.Label(self, text=s, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgf)
@@ -268,7 +270,7 @@ class TicTacToeBoard(tk.Frame):
                     | ((self.l[6] == self.l[7]) & (self.l[7] == self.l[8])) | ((self.l[2] == self.l[4]) &
                                                                                (self.l[4] == self.l[6]))):
 
-                if (player == self.player1):
+                if player == self.player1:
                     self.score_1 += 1
                     self.count = 0
                 else:
@@ -282,7 +284,7 @@ class TicTacToeBoard(tk.Frame):
 
             self.count = self.count + 1
 
-            if (self.count == 10):
+            if self.count == 10:
                 self.count = 1
                 messagebox.showinfo('Tie', 'That is a tie , well played')
                 board(self.player1, self.player2)
