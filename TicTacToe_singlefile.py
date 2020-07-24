@@ -11,20 +11,22 @@ class SeaofBTCapp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        self.title('Tic-Tac-Toe')
+
         self.resizable(0, 0)
 
-        container = tk.Frame(self)
+        self.container = tk.Frame(self)
 
-        container.pack(side="top", fill="both", expand=True)
+        self.container.pack(side="top", fill="both", expand=True)
 
-        container.grid_rowconfigure(0, weight=2)
-        container.grid_columnconfigure(0, weight=2)
+        self.container.grid_rowconfigure(0, weight=2)
+        self.container.grid_columnconfigure(0, weight=2)
+
 
         self.frames = {}
+        self.board = WelcomeScreen(self.container, self)
 
         for F in (TicTacToeBoard, WelcomeScreen, HowToPlay, PlayerSelect):
-            frame = F(container, self)
+            frame = F(self.container, self)
 
             self.frames[F] = frame
 
@@ -32,9 +34,22 @@ class SeaofBTCapp(tk.Tk):
 
         self.show_frame(WelcomeScreen)
 
-    def show_frame(self, cont):
-        frame = self.frames[cont]
-        frame.tkraise()
+
+    def show_frame(self, cont,*args):
+        self.title('Tic-Tac-Toe')
+
+        print(str(cont))
+        print(str(cont))
+        if str(cont) == "<class '__main__.TicTacToeBoard'>":
+            print(args[0])
+            print(args[1])
+            self.board = TicTacToeBoard(self.container, self,args[0],args[1])
+            frame = self.board
+            frame.grid(row=0, column=0, sticky="nsew")
+            frame.tkraise()
+        else :
+            frame = self.frames[cont]
+            frame.tkraise()
 
 
 class WelcomeScreen(tk.Frame):
@@ -42,7 +57,8 @@ class WelcomeScreen(tk.Frame):
         tk.Frame.__init__(self, parent)
         self['bg'] = 'white'
         self.winfo_toplevel().title('Tic-Tac-Toe')
-        #self.winfo_toplevel().pack()
+
+        # self.winfo_toplevel().pack()
 
         def areyousure(event):
             response = messagebox.askquestion("Quit", message='Are you sure you want to quit')
@@ -148,6 +164,8 @@ class HowToPlay(tk.Frame):
 class PlayerSelect(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.name = []
+        self.controller = controller
         self['bg'] = 'white'
 
         def getname(event, arg):
@@ -158,14 +176,15 @@ class PlayerSelect(tk.Frame):
                 spin_val = 1
 
             print(spin_val)
-            name = []
+
             for i in range(0, 2):
                 print(i)
                 self.a = simpledialog.askstring("Player Name", "Please enter Player-" + str(i + 1) + " name")
                 if self.a is None:
                     break
-                name.append(self.a)
-            print(name)
+                self.name.append(self.a)
+            print(self.name)
+
 
         head = tk.Label(self, text='VS', font=("Arial", 50), bg='white')
         player_btn = tk.Button(self, text='Player', font=("Arial ", 50), bg='white', fg='Black', width='10', bd=10)
@@ -178,7 +197,7 @@ class PlayerSelect(tk.Frame):
         space = tk.Label(self, text='*********', fg='white', bg='white')
         matches = tk.Label(self, text='Number of matches (1 to 10) :', font=("Arial", 15), bg='white')
         begin = tk.Button(self, text='Begin Game', font=("Arial", 15),
-                          command=lambda: controller.show_frame(TicTacToeBoard))
+                          command=lambda: controller.show_frame(TicTacToeBoard,self.name[0],self.name[1]))
 
         space.grid(row=0, column=0)
         head.grid(row=0, column=1, columnspan=2)
@@ -190,27 +209,39 @@ class PlayerSelect(tk.Frame):
 
 
 class TicTacToeBoard(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller,*args):
         tk.Frame.__init__(self, parent)
-        # global count, match_no, l, score_1, score_2
 
+        self.controller = controller
         self.match_no = 1
         self.count = 1
         self.score_1 = 0
         self.score_2 = 0
         self.l = list('a b c d e f g h i'.split())
-        self.series = 5
 
-        self.player1 = 'Donald Trump'
-        self.player2 = 'Vladimir Putin'
+        self.series = 5
+        print(self.series)
+
+        try:
+            self.player1 = str(args[0])
+        except:
+            self.player1 = ''
+        try:
+            self.player2 = str(args[1])
+        except:
+            self.player2 = ''
+        print('Player-1 length : ',len(self.player1))
 
         def transform(name, position):
-            if (len(name) > 16):
+            print('Name : ',name)
+            print(len(name))
+            if len(name) > 16:
                 name = str(name[:14]) + '..'
-            elif (len(name) == 0):
+            elif (len(name) == 0) | (name == ''):
                 name = 'Player-' + str(position)
             else:
                 name = name
+            print('Name after process : ',name)
             return name
 
         self.pl1 = transform(self.player1.strip(), 1)
@@ -221,8 +252,8 @@ class TicTacToeBoard(tk.Frame):
         def result(score_1, score_2):
             head = tk.Label(self, text='Score Table:', font=('Arial Italic', 13), bg='#D5D5D5', width='16',
                             height=3)
-            score_1_lb = tk.Label(self, text=self.player1, font=('Arial Italic', 13))
-            score_2_lb = tk.Label(self, text=self.player2, font=('Arial Italic', 13))
+            score_1_lb = tk.Label(self, text=self.pl1, font=('Arial Italic', 13))
+            score_2_lb = tk.Label(self, text=self.pl2, font=('Arial Italic', 13))
             val1 = tk.Label(self, text=str(score_1), font=('Arial Bold', 20), bg='white', relief='ridge',
                             width='10')
             val2 = tk.Label(self, text=str(score_2), font=('Arial Bold', 20), bg='white', relief='ridge',
@@ -320,7 +351,7 @@ class TicTacToeBoard(tk.Frame):
                 else:
                     message = 'The series is a draw'
                 messagebox.showinfo('Congrats to Champion', message)
-                self.quit()
+                controller.show_frame(WelcomeScreen)
 
             def endgame(event):
                 response = messagebox.askquestion("Quit", message='Are you sure you want to end this series, '
@@ -380,56 +411,6 @@ class TicTacToeBoard(tk.Frame):
         board(self.player1, self.player2)
         result(self.score_1, self.score_2)
 
-
-class StartPage(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-
-        label = tk.Label(self, text="Start Page", font=LARGE_FONT)
-        label.pack(pady=10, padx=10)
-
-        button = tk.Button(self, text="Visit Page 1",
-                           command=lambda: controller.show_frame(PageOne))
-        button.pack()
-
-        button2 = tk.Button(self, text="Visit Page 2",
-                            command=lambda: controller.show_frame(PageTwo))
-        button2.pack()
-
-
-class PageOne(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Page One!!!", font=LARGE_FONT)
-        label.pack(pady=10, padx=10)
-        startgame_path = r"D:\learning\Python\tic-tac-toe\button_start-game.png"
-        startgame = ImageTk.PhotoImage(Image.open(startgame_path))
-        button1 = tk.Button(self, image=startgame,
-                            command=lambda: controller.show_frame(StartPage))
-
-        button1.pack()
-
-        button2 = tk.Button(self, text="Page Two",
-                            command=lambda: controller.show_frame(PageTwo))
-        button2.pack()
-
-
-class PageTwo(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Page Two!!!", font=LARGE_FONT)
-        label.pack(pady=10, padx=10)
-
-        button1 = tk.Button(self, text="Back to Home",
-                            command=lambda: controller.show_frame(StartPage))
-        button1.pack()
-
-        button2 = tk.Button(self, text="Page One",
-                            command=lambda: controller.show_frame(PageOne))
-        button2.pack()
 
 
 app = SeaofBTCapp()
