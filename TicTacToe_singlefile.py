@@ -2,7 +2,6 @@ import pathlib
 import sys
 import tkinter as tk
 from tkinter import messagebox
-from tkinter import simpledialog
 
 from PIL import ImageTk, Image
 
@@ -27,7 +26,7 @@ class StartApp(tk.Tk):
         self.frames = {}
         self.board = WelcomeScreen(self.container, self)
 
-        for F in (TicTacToeBoard, WelcomeScreen, HowToPlay, PlayerSelect):
+        for F in (TicTacToeBoard, WelcomeScreen, HowToPlay, PlayerSelect, PlayerDetails):
             frame = F(self.container, self)
 
             self.frames[F] = frame
@@ -72,7 +71,7 @@ class WelcomeScreen(tk.Frame):
         self.quit_img = ImageTk.PhotoImage(Image.open(quit_path))
 
         wel_panel = tk.Label(self, image=self.wel_img, anchor='n', background=property_file.Background.welcomescreen,
-                             width=530)
+                             )
         tic_panel = tk.Label(self, image=self.tic_img, anchor='n', background=property_file.Background.welcomescreen,
                              width=530)
         start_btn = tk.Button(self, image=self.startgame, bd=0, bg=property_file.Background.welcomescreen,
@@ -135,7 +134,7 @@ class HowToPlay(tk.Frame):
         labl.grid(row=1, column=2, padx=5, pady=10)
         gotit_btn.grid(row=2, column=2)
 
-    def rule_change(self, cmnd,):
+    def rule_change(self, cmnd, ):
         if cmnd == 'prev':
             if self.rule > 0:
                 self.rule = self.rule - 1
@@ -153,55 +152,91 @@ class PlayerSelect(tk.Frame):
         self.name = []
         self.controller = controller
         self['bg'] = 'white'
-        self.spin_val = 5
 
-        def getname(event, arg):
-            spin_val = spin.get()
-            if (int(self.spin_val) > 10):
-                spin_val = 10
-            elif (int(spin_val) < 1):
-                spin_val = 1
-            self.spin_val = spin_val
-            print(spin_val)
-
-            for i in range(0, 2):
-                print(i)
-                self.a = simpledialog.askstring("Player Name", "Please enter Player-" + str(i + 1) + " name")
-                if self.a is None:
-                    break
-                self.name.append(self.a)
-            print(self.name)
-
-        try:
-            player1_name = self.name[0]
-        except:
-            player1_name = ''
-        try:
-            player2_name = self.name[1]
-        except:
-            player2_name = ''
-
-        head = tk.Label(self, text='VS', font=("Arial", 50), bg='white')
-        player_btn = tk.Button(self, text='Player', font=("Arial ", 50), bg='white', fg='Black', width='10', bd=10)
-        player_btn.bind('<ButtonRelease-1>', lambda event: getname(event, 'player'))
-
-        comp_btn = tk.Button(self, text='Computer', font=("Arial ", 50), bg='Black', fg='white', width='10', bd=10)
-        comp_btn.bind('<ButtonRelease-1>', lambda event: getname(event, 'computer'))
-
-        spin = tk.Spinbox(self, values=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), width=5)
+        head = tk.Label(self, text='Choose your Game Mode', font=("Arial", 20), bg='white')
+        player_btn = tk.Button(self, text='Player', font=("Arial ", 50), bg='white', fg='Black', width='10', bd=10
+                               , command=lambda: controller.show_frame(PlayerDetails))
+        comp_btn = tk.Button(self, text='Computer', font=("Arial ", 50), bg='Black', fg='white', width='10', bd=10
+                             , command=lambda: PlayerSelect.computer(self))
         space = tk.Label(self, text='*********', fg='white', bg='white')
-        matches = tk.Label(self, text='Number of matches (1 to 10) :', font=("Arial", 15), bg='white')
-        begin = tk.Button(self, text='Begin Game', font=("Arial", 15),
-                          command=lambda: controller.show_frame(TicTacToeBoard, self.name[0], self.name[1],
-                                                                self.spin_val))
+        begin = tk.Button(self, text='Home', font=("Arial", 15),
+                          command=lambda: controller.show_frame(WelcomeScreen))
 
         space.grid(row=0, column=0)
         head.grid(row=0, column=1, columnspan=2)
-        matches.grid(row=1, column=1)
-        spin.grid(row=1, column=2, pady=10)
         player_btn.grid(row=2, column=1, columnspan=2)
         comp_btn.grid(row=3, column=1, columnspan=2)
         begin.grid(row=4, column=1, columnspan=2)
+
+    def computer(self):
+        messagebox.showwarning("Sorry","Under construction , see you in next update")
+
+
+class PlayerDetails(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.spin = 3
+        self.controller = controller
+        heading_left = tk.Label(self, text="         Player's", font=('Arial Italic', 25), anchor='ne',
+                                fg='Black', bg='white', width=9)
+        heading_right = tk.Label(self, text="Lounge          ", font=('Arial Italic', 25), anchor='nw',
+                                 fg='green', bg='white', width=9)
+
+        line = tk.Label(self, text="=> You're just one step away =>", font=('Arial Italic', 17), anchor='n')
+        line1 = tk.Label(self, text='Please enter details below : ', font=('Arial', 12), anchor='nw')
+        line2 = tk.Label(self, text='First Player Name :', font=('Arial', 10), anchor='nw')
+        line3 = tk.Label(self, text='Second Player Name :', font=('Arial', 10), anchor='nw')
+        line4 = tk.Label(self, text='Number of Games to Play :    \nEnter a value between 1 to 10'
+                         , font=('Arial', 10), anchor='w')
+
+        self.text2 = tk.Text(self, height=1, width=20)
+        self.text3 = tk.Text(self, height=1, width=20)
+        self.text4 = tk.Spinbox(self, values=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), width=10)
+        space_left = tk.Label(self, text='        ')
+        space_right = tk.Label(self, text='        ')
+        space_top = tk.Label(self, text=' ', height=1)
+        back = tk.Button(self, text="<-Back", bd=2, width=15, height=3,
+                         command=lambda: controller.show_frame(PlayerSelect))
+        begin = tk.Button(self, text="Begin game->", bd=2, width=15, height=3,
+                          command=lambda: PlayerDetails.startgame(self, self.text2.get("1.0", "end")
+                                                                  , self.text3.get("1.0", "end"),
+                                                                  self.text4.get()))
+        home = tk.Button(self, text="Home", bd=2, width=20, height=3,
+                         command=lambda: controller.show_frame(WelcomeScreen))
+        space_top.grid(row=0)
+        space_left.grid(row=1, column=0, padx=10, pady=10)
+        space_right.grid(row=1, column=3, padx=10, pady=10)
+
+        heading_left.grid(row=1, column=1, padx=10, pady=0)
+        heading_right.grid(row=1, column=2, padx=10, pady=10)
+        line.grid(row=2, column=1, columnspan=2, padx=10, pady=10)
+        line1.grid(row=3, column=1, padx=10, pady=10)
+        line2.grid(row=4, column=1, sticky='w', padx=10, pady=10)
+        self.text2.grid(row=4, column=2, sticky='w', padx=10, pady=10)
+        line3.grid(row=5, column=1, sticky='w', padx=10, pady=10)
+        self.text3.grid(row=5, column=2, sticky='w', padx=10, pady=10)
+        line4.grid(row=6, column=1, sticky='w', padx=10, pady=10)
+        self.text4.grid(row=6, column=2, sticky='w', padx=10, pady=10)
+        back.grid(row=7, column=1, padx=10, pady=10)
+        begin.grid(row=7, column=2, padx=10, pady=10)
+        home.grid(row=8, column=1, columnspan=2, sticky='n')
+
+    def startgame(self, *args):
+        pl1_name = args[0]
+        pl2_name = args[1]
+        matches = PlayerDetails.get_spin(self, args[2])
+        print("Matches : ", matches)
+        self.controller.show_frame(TicTacToeBoard, pl1_name, pl2_name, matches)
+
+    def get_spin(self, *args):
+        print(args[0])
+        if int(args[0]) > 10:
+            self.spin = 10
+        elif int(args[0]) < 1:
+            self.spin = 1
+        else:
+            self.spin = args[0]
+        return self.spin
 
 
 class TicTacToeBoard(tk.Frame):
@@ -230,8 +265,8 @@ class TicTacToeBoard(tk.Frame):
         self.pl1 = TicTacToeBoard.transform(self.player1.strip(), 1)
         self.pl2 = TicTacToeBoard.transform(self.player2.strip(), 2)
 
-        TicTacToeBoard.board(self,self.player1, self.player2)
-        TicTacToeBoard.result(self,self.score_1, self.score_2)
+        TicTacToeBoard.board(self, self.player1, self.player2)
+        TicTacToeBoard.result(self, self.score_1, self.score_2)
 
     def transform(name, position):
         print('Name : ', name)
@@ -245,7 +280,7 @@ class TicTacToeBoard(tk.Frame):
         print('Name after process : ', name)
         return name
 
-    def result(self,score_1, score_2):
+    def result(self, score_1, score_2):
         head = tk.Label(self, text='Score Table:', font=('Arial Italic', 13), bg='#D5D5D5', width='16',
                         height=3)
         score_1_lb = tk.Label(self, text=self.pl1, font=('Arial Italic', 13))
@@ -261,7 +296,7 @@ class TicTacToeBoard(tk.Frame):
         val1.grid(row=1, column=1)
         val2.grid(row=1, column=2)
 
-    def chg(self,event, r, c, f, s, fgf, fgs, pl1, pl2):
+    def chg(self, event, r, c, f, s, fgf, fgs, pl1, pl2):
         # method to responds after a click event
         event.widget.grid_forget()
         # global count
@@ -281,7 +316,7 @@ class TicTacToeBoard(tk.Frame):
             b.grid(row=r, column=c)
             TicTacToeBoard.validate(self, r, c, pl1)
 
-    def validate(self,r, c, player):
+    def validate(self, r, c, player):
         a = (r - 2) * 3 + c
         self.l[a] = player
         if (((self.l[0] == self.l[1]) & (self.l[1] == self.l[2])) | ((self.l[0] == self.l[4]) &
@@ -303,17 +338,17 @@ class TicTacToeBoard(tk.Frame):
             # window.destroy()
             TicTacToeBoard.result(self, self.score_1, self.score_2)
             messagebox.showinfo('Congrats', str(player) + ' wins')
-            TicTacToeBoard.board(self,self.player1, self.player2)
+            TicTacToeBoard.board(self, self.player1, self.player2)
 
         self.count = self.count + 1
 
         if self.count == 10:
             self.count = 1
             messagebox.showinfo('Tie', 'That is a tie , well played')
-            TicTacToeBoard.board(self.player1, self.player2)
+            TicTacToeBoard.board(self, self.player1, self.player2)
             # window.destroy()
 
-    def board(self,player1, player2):
+    def board(self, player1, player2):
 
         # global l
         # global match_no
