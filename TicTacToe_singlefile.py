@@ -5,60 +5,79 @@ from tkinter import messagebox
 
 from PIL import ImageTk, Image
 
+# ttk.Style().theme_use('clam')
+
 print(pathlib.Path().absolute())
 path = pathlib.Path().absolute()
 sys.path.insert(1, path)
 
 import property_file
 
-theme = property_file.Dark
+
+# theme = property_file.Bright
 
 class StartApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+
         self.geometry('527x615')
         self.resizable(0, 0)
         self.container = tk.Frame(self)
         self.container.pack(side="top", fill="both", expand=True)
         self.container.grid_rowconfigure(0, weight=2)
         self.container.grid_columnconfigure(0, weight=2)
-
+        self.theme = property_file.Dark
         self.frames = {}
-        self.board = WelcomeScreen(self.container, self)
+        self.board = WelcomeScreen(self.container, self, self.theme)
 
+        StartApp.loadframes(self, self.theme , self.container)
+        self.show_frame(WelcomeScreen)
+
+    def loadframes(self, theme_class, root,*args):
+        self.theme = theme_class
+        print(self.theme)
+        print(theme_class)
+        self.frames = {}
+        self.container = root
         for F in (TicTacToeBoard, WelcomeScreen, HowToPlay, PlayerSelect, PlayerDetails):
-            frame = F(self.container, self)
+            frame = F(self.container, self, self.theme)
 
             self.frames[F] = frame
 
             frame.grid(row=0, column=0, sticky="nsew")
+        try:
+            if str(args[0]) == 'change':
+                self.show_frame(WelcomeScreen)
+        except:
+            pass
 
-        self.show_frame(WelcomeScreen)
 
     def show_frame(self, cont, *args):
+        print(self.theme)
         self.title('Tic-Tac-Toe')
         print(str(cont))
         print(str(cont))
         if str(cont) == "<class '__main__.TicTacToeBoard'>":
             print(args[0])
             print(args[1])
-            self.board = TicTacToeBoard(self.container, self, args[0], args[1], args[2])
+            self.board = TicTacToeBoard(self.container, self, self.theme, args[0], args[1], args[2])
             frame = self.board
             frame.grid(row=0, column=0, sticky="nsew")
             frame.tkraise()
+
         else:
             frame = self.frames[cont]
             frame.tkraise()
 
 
-
 class WelcomeScreen(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, theme):
         tk.Frame.__init__(self, parent)
         self['bg'] = theme.Background.welcomescreen
         self.winfo_toplevel().title('Tic-Tac-Toe')
-
+        self.parent = parent
+        self.controller = controller
         wel_path = theme.GameImages.wel_path
         tic_path = theme.GameImages.icon_path
         startgame_path = theme.GameImages.startgame_path
@@ -77,29 +96,41 @@ class WelcomeScreen(tk.Frame):
         tic_panel = tk.Label(self, image=self.tic_img, anchor='n', background=theme.Background.welcomescreen,
                              width=530)
         start_btn = tk.Button(self, image=self.startgame, bd=0, bg=theme.Background.welcomescreen,
-                              activebackground = theme.Background.welcomescreen,
+                              activebackground=theme.Background.welcomescreen,
                               command=lambda: controller.show_frame(PlayerSelect))
         howtoplay_btn = tk.Button(self, image=self.howtoplay, bd=0, bg=theme.Background.welcomescreen,
-                                  activebackground = theme.Background.welcomescreen,
+                                  activebackground=theme.Background.welcomescreen,
                                   command=lambda: controller.show_frame(HowToPlay))
         quit_btn = tk.Button(self, image=self.quit_img, bd=0, bg=theme.Background.welcomescreen,
-                             activebackground = theme.Background.welcomescreen)
+                             activebackground=theme.Background.welcomescreen)
         quit_btn.bind('<ButtonRelease-1>', lambda event: WelcomeScreen.are_you_sure(self))
-
+        space = tk.Label(self, text='***', anchor='n', background=theme.Background.welcomescreen,
+                         fg=theme.Background.welcomescreen, width=7)
+        self.chng_theme = ImageTk.PhotoImage(Image.open(theme.GameImages.WelcomeScreen_ChangeTheme))
+        chng_btn = tk.Button(self, image=self.chng_theme, bd=0, bg=theme.Background.welcomescreen,
+                             activebackground=theme.Background.welcomescreen,
+                             command=lambda: WelcomeScreen.change_theme(self))
+        # StartApp.loadframes(self,property_file.Bright,self.parent)
         wel_panel.grid(row=0)
         tic_panel.grid(row=1)
         start_btn.grid(row=2, pady=5)
         howtoplay_btn.grid(row=3, pady=5)
         quit_btn.grid(row=4, pady=5)
+        space.grid(row=5,pady=35)
+        chng_btn.grid(row=6)
 
     def are_you_sure(self):
         response = messagebox.askquestion("Quit", message='Are you sure you want to quit')
         if response == 'yes':
             self.quit()
 
+    def change_theme(self):
+        StartApp.loadframes(self, property_file.Bright,self.parent,'change')
+        # self.controller.show_frame(WelcomeScreen)
+
 
 class HowToPlay(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, theme):
         tk.Frame.__init__(self, parent)
         self['bg'] = theme.Background.how_to_play
         self.rules = []
@@ -127,14 +158,14 @@ class HowToPlay(tk.Frame):
                              activebackground=theme.Background.how_to_play)
         prev_btn.bind('<ButtonRelease-1>', lambda event: HowToPlay.rule_change(self, 'prev'))
         next_btn = tk.Button(self, anchor='e', image=self.next_img, bd=0, bg=theme.Background.how_to_play,
-                             activebackground=theme.Background.how_to_play,)
+                             activebackground=theme.Background.how_to_play, )
         next_btn.bind('<ButtonRelease-1>', lambda event: HowToPlay.rule_change(self, 'next'))
         gotit_btn = tk.Button(self, image=self.gotit_img, bd=0, bg=theme.Background.how_to_play,
                               activebackground=theme.Background.how_to_play,
                               command=lambda: controller.show_frame(WelcomeScreen))
         labl = tk.Label(self, image=self.rules[self.rule])
 
-        space = tk.Button(self, text='      ', bd=0,bg=theme.Background.how_to_play)
+        space = tk.Button(self, text='      ', bd=0, bg=theme.Background.how_to_play)
         space.grid(row=2, column=0)
         ins.grid(row=0, column=2, pady=20)
         prev_btn.grid(row=1, column=1, padx=5)
@@ -155,13 +186,14 @@ class HowToPlay(tk.Frame):
 
 
 class PlayerSelect(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, theme):
         tk.Frame.__init__(self, parent)
         self.name = []
         self.controller = controller
         self['bg'] = theme.Background.PlayerSelect
-        space_top = tk.Label(self, text='*', height=2,bg=theme.Background.PlayerSelect,fg=theme.Background.PlayerSelect)
-        head = tk.Label(self, text='Choose your Game Mode', font=("Arial", 20),fg=theme.Font.text_color,
+        space_top = tk.Label(self, text='*', height=2, bg=theme.Background.PlayerSelect,
+                             fg=theme.Background.PlayerSelect)
+        head = tk.Label(self, text='Choose your Game Mode', font=("Arial", 20), fg=theme.Font.text_color,
                         bg=theme.Background.PlayerSelect)
         self.player_img = ImageTk.PhotoImage(Image.open(theme.GameImages.PlayerSelect_Player))
         player_btn = tk.Button(self, image=self.player_img, bg=theme.Background.PlayerSelect, bd=0
@@ -169,29 +201,28 @@ class PlayerSelect(tk.Frame):
                                command=lambda: controller.show_frame(PlayerDetails))
         self.comp_img = ImageTk.PhotoImage(Image.open(theme.GameImages.PlayerSelect_Computer))
         comp_btn = tk.Button(self, image=self.comp_img, bg=theme.Background.PlayerSelect, bd=0,
-                                activebackground = theme.Background.PlayerSelect
+                             activebackground=theme.Background.PlayerSelect
                              , command=lambda: PlayerSelect.computer(self))
         space_left = tk.Label(self, text='*****************', fg=theme.Background.PlayerSelect,
                               bg=theme.Background.PlayerSelect)
         self.home_img = ImageTk.PhotoImage(Image.open(theme.GameImages.PlayerSelect_home))
-        home = tk.Button(self, image=self.home_img,bd=0,bg=theme.Background.PlayerSelect
-                        ,activebackground=theme.Background.PlayerSelect,
-                          command=lambda: controller.show_frame(WelcomeScreen))
+        home = tk.Button(self, image=self.home_img, bd=0, bg=theme.Background.PlayerSelect
+                         , activebackground=theme.Background.PlayerSelect,
+                         command=lambda: controller.show_frame(WelcomeScreen))
 
-
-        space_top.grid(row=0,column=0)
+        space_top.grid(row=0, column=0)
         space_left.grid(row=0, column=0)
-        head.grid(row=1, column=1, columnspan=2,padx=10,pady=20)
-        player_btn.grid(row=3, column=1, columnspan=2,padx=10,pady=10)
-        comp_btn.grid(row=4, column=1, columnspan=2,padx=10,pady=10)
-        home.grid(row=5, column=1, columnspan=2,padx=10,pady=20)
+        head.grid(row=1, column=1, columnspan=2, padx=10, pady=20)
+        player_btn.grid(row=3, column=1, columnspan=2, padx=10, pady=10)
+        comp_btn.grid(row=4, column=1, columnspan=2, padx=10, pady=10)
+        home.grid(row=5, column=1, columnspan=2, padx=10, pady=20)
 
     def computer(self):
-        messagebox.showwarning("Sorry","Under construction , see you in next update")
+        messagebox.showwarning("Sorry", "Under construction , see you in next update")
 
 
 class PlayerDetails(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, theme):
         tk.Frame.__init__(self, parent)
         self['bg'] = theme.Background.PlayerDetails
         self.spin = 3
@@ -223,11 +254,11 @@ class PlayerDetails(tk.Frame):
                              bg=theme.Background.PlayerDetails, fg=theme.Background.PlayerDetails,
                              )
         self.back_img = ImageTk.PhotoImage(Image.open(theme.GameImages.PlayerDetails_back))
-        back = tk.Button(self, image = self.back_img, bd=0,
+        back = tk.Button(self, image=self.back_img, bd=0,
                          bg=theme.Background.PlayerDetails, activebackground=theme.Background.PlayerDetails,
                          command=lambda: controller.show_frame(PlayerSelect))
         self.begin_img = ImageTk.PhotoImage(Image.open(theme.GameImages.PlayerDetails_begin))
-        begin = tk.Button(self, image= self.begin_img, bd=0,
+        begin = tk.Button(self, image=self.begin_img, bd=0,
                           bg=theme.Background.PlayerDetails, activebackground=theme.Background.PlayerDetails,
                           command=lambda: PlayerDetails.startgame(self, self.text2.get("1.0", "end-1c")
                                                                   , self.text3.get("1.0", "end-1c"),
@@ -273,9 +304,10 @@ class PlayerDetails(tk.Frame):
 
 
 class TicTacToeBoard(tk.Frame):
-    def __init__(self, parent, controller, *args):
+    def __init__(self, parent, controller, theme, *args):
         tk.Frame.__init__(self, parent)
         self['bg'] = theme.Background.TicTacToe
+        self.theme = theme
         self.controller = controller
         self.match_no = 1
         self.count = 1
@@ -316,11 +348,11 @@ class TicTacToeBoard(tk.Frame):
 
     def result(self, score_1, score_2):
         head = tk.Label(self, text='Score Table:', font=('Arial Italic', 13), width='16',
-                        height=3, bg=theme.TicTacToe.even_box, fg=theme.Font.text_color)
+                        height=3, bg=self.theme.TicTacToe.even_box, fg=self.theme.Font.text_color)
         score_1_lb = tk.Label(self, text=self.pl1, font=('Arial Italic', 13),
-                              fg=theme.Font.text_color,bg=theme.Background.TicTacToe)
+                              fg=self.theme.Font.text_color, bg=self.theme.Background.TicTacToe)
         score_2_lb = tk.Label(self, text=self.pl2, font=('Arial Italic', 13),
-                              fg=theme.Font.text_color, bg=theme.Background.TicTacToe)
+                              fg=self.theme.Font.text_color, bg=self.theme.Background.TicTacToe)
         val1 = tk.Label(self, text=str(score_1), font=('Arial Bold', 20), bg='white', relief='ridge',
                         width='9')
         val2 = tk.Label(self, text=str(score_2), font=('Arial Bold', 20), bg='white', relief='ridge',
@@ -341,7 +373,7 @@ class TicTacToeBoard(tk.Frame):
             self.winfo_toplevel().title('Tic-Tac-Toe    Series :' + str(self.series) + '  Game :' +
                                         str(self.match_no - 1) + '   ' + str(pl1) + ' turn ')
             b = tk.Label(self, text=s, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgf,
-                         bg=theme.Background.TicTacToe)
+                         bg=self.theme.Background.TicTacToe)
 
             b.grid(row=r, column=c)
             TicTacToeBoard.validate(self, r, c, pl2)
@@ -349,13 +381,13 @@ class TicTacToeBoard(tk.Frame):
             self.winfo_toplevel().title('Tic-Tac-Toe    Series :' + str(self.series) + '  Game :' +
                                         str(self.match_no - 1) + '   ' + str(pl2) + ' turn ')
             b = tk.Label(self, text=f, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgs,
-                         bg=theme.Background.TicTacToe)
+                         bg=self.theme.Background.TicTacToe)
 
             b.grid(row=r, column=c)
             TicTacToeBoard.validate(self, r, c, pl1)
 
     def validate(self, r, c, player):
-        print("validate,player",player)
+        print("validate,player", player)
         print(self.l)
         a = (r - 2) * 3 + c
         self.l[a] = player
@@ -396,15 +428,15 @@ class TicTacToeBoard(tk.Frame):
         if self.match_no % 2 == 0:
             f = 'O'
             s = 'X'
-            fgs = theme.TicTacToe.color_O
-            fgf = theme.TicTacToe.color_x
+            fgs = self.theme.TicTacToe.color_O
+            fgf = self.theme.TicTacToe.color_x
             pl1 = player2
             pl2 = player1
         else:
             f = 'X'
             s = 'O'
-            fgs = theme.TicTacToe.color_x
-            fgf = theme.TicTacToe.color_O
+            fgs = self.theme.TicTacToe.color_x
+            fgf = self.theme.TicTacToe.color_O
             pl1 = player1
             pl2 = player2
 
@@ -434,45 +466,46 @@ class TicTacToeBoard(tk.Frame):
             series_end()
 
         # print("Count at board",count)
-        b00 = tk.Button(self, bg=theme.TicTacToe.odd_box, bd=0, width=24, height=10)
+        b00 = tk.Button(self, bg=self.theme.TicTacToe.odd_box, bd=0, width=24, height=10)
         b00.grid(row=2, column=0)
         b00.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 2, 0, f, s, fgf, fgs, pl1, pl2))
 
-        b01 = tk.Button(self, bg=theme.TicTacToe.even_box, bd=0, width=24, height=10)
+        b01 = tk.Button(self, bg=self.theme.TicTacToe.even_box, bd=0, width=24, height=10)
         b01.grid(row=2, column=1)
         b01.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 2, 1, f, s, fgf, fgs, pl1, pl2))
 
-        b02 = tk.Button(self, bg=theme.TicTacToe.odd_box, bd=0, width=24, height=10)
+        b02 = tk.Button(self, bg=self.theme.TicTacToe.odd_box, bd=0, width=24, height=10)
         b02.grid(row=2, column=2)
         b02.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 2, 2, f, s, fgf, fgs, pl1, pl2))
 
-        b10 = tk.Button(self, bg=theme.TicTacToe.even_box, bd=0, width=24, height=10)
+        b10 = tk.Button(self, bg=self.theme.TicTacToe.even_box, bd=0, width=24, height=10)
         b10.grid(row=3, column=0)
         b10.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 3, 0, f, s, fgf, fgs, pl1, pl2))
 
-        b11 = tk.Button(self, bg=theme.TicTacToe.odd_box, bd=0, width=24, height=10)
+        b11 = tk.Button(self, bg=self.theme.TicTacToe.odd_box, bd=0, width=24, height=10)
         b11.grid(row=3, column=1)
         b11.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 3, 1, f, s, fgf, fgs, pl1, pl2))
 
-        b12 = tk.Button(self, bg=theme.TicTacToe.even_box, bd=0, width=24, height=10)
+        b12 = tk.Button(self, bg=self.theme.TicTacToe.even_box, bd=0, width=24, height=10)
         b12.grid(row=3, column=2)
         b12.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 3, 2, f, s, fgf, fgs, pl1, pl2))
 
-        b20 = tk.Button(self, bg=theme.TicTacToe.odd_box, bd=0, width=24, height=10)
+        b20 = tk.Button(self, bg=self.theme.TicTacToe.odd_box, bd=0, width=24, height=10)
         b20.grid(row=4, column=0)
         b20.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 4, 0, f, s, fgf, fgs, pl1, pl2))
 
-        b21 = tk.Button(self, bg=theme.TicTacToe.even_box, bd=0, width=24, height=10)
+        b21 = tk.Button(self, bg=self.theme.TicTacToe.even_box, bd=0, width=24, height=10)
         b21.grid(row=4, column=1)
         b21.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 4, 1, f, s, fgf, fgs, pl1, pl2))
 
-        b22 = tk.Button(self, bg=theme.TicTacToe.odd_box, bd=0, width=24, height=10)
+        b22 = tk.Button(self, bg=self.theme.TicTacToe.odd_box, bd=0, width=24, height=10)
         b22.grid(row=4, column=2)
         b22.bind('<Button-1>', lambda event: TicTacToeBoard.chg(self, event, 4, 2, f, s, fgf, fgs, pl1, pl2))
 
         end_game = tk.Button(self, width=43, height=2, text='End Game', font=('Arial Bold', 15), bd=3,
-                              fg=theme.Font.text_color, bg=theme.TicTacToe.score_board,
-                             activebackground=theme.TicTacToe.score_board,activeforeground=theme.Font.text_color)
+                             fg=self.theme.Font.text_color, bg=self.theme.TicTacToe.score_board,
+                             activebackground=self.theme.TicTacToe.score_board,
+                             activeforeground=self.theme.Font.text_color)
         end_game.grid(row=5, column=0, columnspan=3)
         end_game.bind('<ButtonRelease-1>', lambda event: endgame(event))
 

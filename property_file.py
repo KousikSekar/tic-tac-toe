@@ -21,13 +21,15 @@ class Dark:
         rule1_path = path + r"\horizontal.PNG"
         rule2_path = path + r"\vertical.png"
         rule3_path = path + r"\diagonal.PNG"
-        gotit_path = path + r"\button_got-it_bright.png"
-        PlayerSelect_home = path + r"\button_home_bright.png"
+        gotit_path = path + r"\button_got-it_dark.png"
+        WelcomeScreen_ChangeTheme = path + r"\button_change-theme_dark.png"
+        PlayerSelect_home = path + r"\button_home_dark.png"
         PlayerSelect_Player = path + r"\button_player_dark.png"
         PlayerSelect_Computer = path + r"\button_computer_dark.png"
-        PlayerDetails_back = path + r"\button_back_bright.png"
-        PlayerDetails_begin = path + r"\button_begin-game_bright.png"
-        PlayerDetails_home = path + r"\button_home_bright.png"
+        PlayerDetails_back = path + r"\button_back_dark.png"
+        PlayerDetails_begin = path + r"\button_begin-game_dark.png"
+        PlayerDetails_home = path + r"\button_home_dark.png"
+
 
     class Font:
         arial_18 = ('Arial',18)
@@ -57,28 +59,45 @@ class Bright:
     class GameImages:
         path = str(pathlib.Path().absolute()) + r"\images"
         wel_path = path + r'\welcome_dark.png'
-        icon_path = path + r'\TicTacToe2_dark.png'
-        startgame_path = path + r"\button_start-game_dark.png"
-        howtoplay_path = path + r"\button_how-to-play_dark.png"
-        quit_path = path + r"\button_quit_dark.png"
+        icon_path = path + r'\TicTacToe2.png'
+        startgame_path = path + r"\button_start-game.png"
+        howtoplay_path = path + r"\button_how-to-play.png"
+        quit_path = path + r"\button_quit.png"
         prev_path = path + r"\left.png"
         next_path = path + r"\right.png"
         rule1_path = path + r"\horizontal.PNG"
         rule2_path = path + r"\vertical.png"
         rule3_path = path + r"\diagonal.PNG"
         gotit_path = path + r"\button_got-it_bright.png"
+        WelcomeScreen_ChangeTheme = path + r"\button_change-theme_bright.png"
         PlayerSelect_home = path + r"\button_home_bright.png"
+        PlayerSelect_Player = path + r"\button_player_bright.png"
+        PlayerSelect_Computer = path + r"\button_computer_bright.png"
+        PlayerDetails_back = path + r"\button_back_bright.png"
+        PlayerDetails_begin = path + r"\button_begin-game_bright.png"
+        PlayerDetails_home = path + r"\button_home_bright.png"
 
     class Font:
         arial_18 = ('Arial', 18)
-        text_color = 'white'
+        text_color = 'black'
+        Lounge = '#6A7D1F'
 
     class Background:
-        welcomescreen = '#050940'
+        welcomescreen = 'white'
         how_to_play = 'white'
+        PlayerSelect = 'white'
+        PlayerDetails = 'white'
+        TicTacToe = 'white'
 
     class Foreground:
         how_to_play = 'Black'
+
+    class TicTacToe:
+        odd_box = 'white'
+        even_box = '#CECCCC'
+        score_board = '#D5D5D5'
+        color_O = 'red'
+        color_x = 'black'
 
 
 
