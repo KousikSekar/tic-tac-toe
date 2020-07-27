@@ -13,6 +13,7 @@ def tic(series,player1,player2):
     global window
     window = tkinter.Tk()
     #window.geometry("520x540")
+    window.geometry("525x540")
     window.title("Tic Tac Toe")
     window.resizable(0,0)
 
