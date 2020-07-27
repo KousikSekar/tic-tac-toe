@@ -5,16 +5,11 @@ from tkinter import messagebox
 
 from PIL import ImageTk, Image
 
-# ttk.Style().theme_use('clam')
-
-print(pathlib.Path().absolute())
+# print(pathlib.Path().absolute())
 path = pathlib.Path().absolute()
 sys.path.insert(1, path)
 
 import property_file
-
-
-# theme = property_file.Bright
 
 class StartApp(tk.Tk):
 
@@ -27,17 +22,15 @@ class StartApp(tk.Tk):
         self.container.pack(side="top", fill="both", expand=True)
         self.container.grid_rowconfigure(0, weight=2)
         self.container.grid_columnconfigure(0, weight=2)
-        self.theme = property_file.Dark
+        self.theme = property_file.Bright
         self.frames = {}
         self.board = WelcomeScreen(self.container, self, self.theme)
 
         StartApp.loadframes(self, self.theme , self.container)
-        self.show_frame(WelcomeScreen,property_file.Dark)
+        self.show_frame(WelcomeScreen,self.theme)
 
-    def loadframes(self, theme_class, root,*args):
+    def loadframes(self, theme_class, root):
         self.theme = theme_class
-        print(self.theme)
-        print(theme_class)
         self.frames = {}
         self.container = root
         for F in (TicTacToeBoard, WelcomeScreen, HowToPlay, PlayerSelect, PlayerDetails):
@@ -46,23 +39,11 @@ class StartApp(tk.Tk):
             self.frames[F] = frame
 
             frame.grid(row=0, column=0, sticky="nsew")
-        try:
-            if str(args[0]) == 'change':
-                self.show_frame(WelcomeScreen)
-        except:
-            pass
-
 
     def show_frame(self, cont, theme, *args):
         self.theme = theme
-        print(self.theme)
         self.title('Tic-Tac-Toe')
-        print(str(cont))
-        print(str(cont))
         if str(cont) == "<class '__main__.TicTacToeBoard'>":
-            print('Showframe arg[0] : ', args[0])
-            print('Showframe arg[1] : ',args[1])
-            print('Showframe arg[2] : ', args[2])
             self.board = TicTacToeBoard(self.container, self, self.theme, args[0], args[1], args[2])
             frame = self.board
             frame.grid(row=0, column=0, sticky="nsew")
@@ -72,8 +53,6 @@ class StartApp(tk.Tk):
             frame = self.board
             frame.grid(row=0, column=0, sticky='nsew')
             frame.tkraise()
-            # frame = self.frames[cont]
-            # frame.tkraise()
 
 
 class WelcomeScreen(tk.Frame):
@@ -108,10 +87,10 @@ class WelcomeScreen(tk.Frame):
                              width=530)
         start_btn = tk.Button(self, image=self.startgame, bd=0, bg=theme.Background.welcomescreen,
                               activebackground=theme.Background.welcomescreen,
-                              command=lambda: controller.show_frame(PlayerSelect,theme))
+                              command=lambda: controller.show_frame(PlayerSelect, theme))
         howtoplay_btn = tk.Button(self, image=self.howtoplay, bd=0, bg=theme.Background.welcomescreen,
                                   activebackground=theme.Background.welcomescreen,
-                                  command=lambda: controller.show_frame(HowToPlay,theme))
+                                  command=lambda: controller.show_frame(HowToPlay, theme))
         quit_btn = tk.Button(self, image=self.quit_img, bd=0, bg=theme.Background.welcomescreen,
                              activebackground=theme.Background.welcomescreen)
         quit_btn.bind('<ButtonRelease-1>', lambda event: WelcomeScreen.are_you_sure(self))
@@ -387,7 +366,7 @@ class TicTacToeBoard(tk.Frame):
         # global count
         # print('count at chg',count)
         if (self.count % 2) == 0:
-            self.winfo_toplevel().title('Tic-Tac-Toe    Series :' + str(self.series) + '  Game :' +
+            self.winfo_toplevel().title('Tic-Tac-Toe    Series of ' + str(self.series) + ' game ;  Game :' +
                                         str(self.match_no - 1) + '   ' + str(pl1) + ' turn ')
             b = tk.Label(self, text=s, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgf,
                          bg=self.theme.Background.TicTacToe)
@@ -395,7 +374,7 @@ class TicTacToeBoard(tk.Frame):
             b.grid(row=r, column=c)
             TicTacToeBoard.validate(self, r, c, pl2)
         else:
-            self.winfo_toplevel().title('Tic-Tac-Toe    Series :' + str(self.series) + '  Game :' +
+            self.winfo_toplevel().title('Tic-Tac-Toe    Series of ' + str(self.series) + ' game ;  Game :' +
                                         str(self.match_no - 1) + '   ' + str(pl2) + ' turn ')
             b = tk.Label(self, text=f, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgs,
                          bg=self.theme.Background.TicTacToe)
@@ -458,6 +437,7 @@ class TicTacToeBoard(tk.Frame):
             pl2 = player2
 
         def series_end():
+            self.winfo_toplevel().title('Tic-Tac-Toe    Series of ' + str(self.series) + ' game')
             if self.score_1 > self.score_2:
                 winner = player1
                 message = str(player1) + ' wins the series'
@@ -469,6 +449,7 @@ class TicTacToeBoard(tk.Frame):
             messagebox.showinfo('Congrats to Champion', message)
             self.controller.show_frame(WelcomeScreen, self.theme)
 
+
         def endgame(event):
             response = messagebox.askquestion("Quit", message='Are you sure you want to end this series, '
                                                               'you will be navigated back to home screen')
@@ -477,10 +458,11 @@ class TicTacToeBoard(tk.Frame):
                 series_end()
 
         self.match_no += 1
-        self.winfo_toplevel().title('Tic-Tac-Toe    Series :' + str(self.series) +
-                                    '  Game :' + str(self.match_no - 1) + '   ' + str(pl1) + ' turn ')
+        self.winfo_toplevel().title('Tic-Tac-Toe    Series of ' + str(self.series) +
+                                    ' game ;  Game :' + str(self.match_no - 1) + '   ' + str(pl1) + ' turn ')
         if self.match_no >= self.series + 2:
             series_end()
+
 
         # print("Count at board",count)
         b00 = tk.Button(self, bg=self.theme.TicTacToe.odd_box, bd=0, width=24, height=10)
@@ -531,3 +513,4 @@ class TicTacToeBoard(tk.Frame):
 app = StartApp()
 
 app.mainloop()
+input()
