@@ -47,6 +47,7 @@ class StartApp(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
             frame.tkraise()
         else:
+            self.title('Tic-Tac-Toe')
             self.board = cont(self.container, self, self.theme)
             frame = self.board
             frame.grid(row=0, column=0, sticky='nsew')
@@ -345,36 +346,50 @@ class TicTacToeBoard(tk.Frame):
         val1.grid(row=1, column=1)
         val2.grid(row=1, column=2)
 
-    def chg(self, event, r, c, f, s, fgf, fgs, pl1, pl2): # 1) self,event,row,column,f=x,s=0,fgf=red,fgs=black,pl1=player1,pl2=player2
-        # f = o ,s = x , pl1 = player2 , pl2 = player1
+    def chg(self, event, r, c, f, s, fgf, fgs, pl1, pl2):
         event.widget.grid_forget()
-        print('player 1',pl1)
-        print('player 2',pl2)
+        print('match_no : ',self.match_no)
+        # self.count = 1
+        # if self.match_no % 2 == 0:
+        #     f = 'O'
+        #     s = 'X'
+        #     fgs = self.theme.TicTacToe.color_O
+        #     fgf = self.theme.TicTacToe.color_x
+        #     pl1 = player2
+        #     pl2 = player1
+        # else:
+        #     f = 'X'
+        #     s = 'O'
+        #     fgs = self.theme.TicTacToe.color_x
+        #     fgf = self.theme.TicTacToe.color_O
+        #     pl1 = player1
+        #     pl2 = player2
         if (self.count % 2) == 0:
-            if str(pl1) == 'computer':
-                TicTacToeBoard.computer(self, r, c, f, s, fgf, fgs, pl1, pl2)
-                TicTacToeBoard.validate(self, r, c, pl2)
+            print('count at if block in chg :',self.count)
             self.winfo_toplevel().title('Tic-Tac-Toe    Series of ' + str(self.series) + ' game ;  Game :' +
                                         str(self.match_no - 1) + '   ' + str(pl1) + ' turn ')
             b = tk.Label(self, text=s, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgf,
                          bg=self.theme.Background.TicTacToe)
 
             b.grid(row=r, column=c)
-            TicTacToeBoard.validate(self, r, c, pl2)
+            stopper = TicTacToeBoard.validate(self, r, c, pl2)
+            if(str(pl1) == 'computer') & (stopper!=2):
+                TicTacToeBoard.computer(self, f, s, fgf, fgs, pl1, pl2)
 
 
         else:
-            b = tk.Label(self, text=f, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgs,
-                         bg=self.theme.Background.TicTacToe)
-
-            b.grid(row=r, column=c)
+            print('count at else block in chg :', self.count)
             self.winfo_toplevel().title('Tic-Tac-Toe    Series of ' + str(self.series) + ' game ;  Game :' +
                                         str(self.match_no - 1) + '   ' + str(pl2) + ' turn ')
-            TicTacToeBoard.validate(self, r, c, pl1)
-            if str(pl2) == 'computer':
-                TicTacToeBoard.computer(self, r, c, f, s, fgf, fgs, pl1, pl2)
-                TicTacToeBoard.validate(self, r, c, pl2)
+            b = tk.Label(self, text=f, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgs,
+                         bg=self.theme.Background.TicTacToe)
+            b.grid(row=r, column=c)
+            stopper = TicTacToeBoard.validate(self, r, c, pl1)
+            print('stopper : ',stopper)
 
+            if (str(pl2) == 'computer')& (self.count>1)& (stopper!=2):
+                print('method inside chg executed')
+                TicTacToeBoard.computer(self, f, s, fgf, fgs, pl1, pl2)
 
     def validate(self, r, c, player):
         a = (r - 2) * 3 + c
@@ -391,6 +406,7 @@ class TicTacToeBoard(tk.Frame):
             if player == self.pl1:
                 self.score_1 += 1
                 self.count = 0
+
             else:
                 self.score_2 += 1
                 self.count = 0
@@ -398,6 +414,7 @@ class TicTacToeBoard(tk.Frame):
             TicTacToeBoard.result(self, self.score_1, self.score_2)
             messagebox.showinfo('Congrats', str(player) + ' wins')
             TicTacToeBoard.board(self, self.pl1, self.pl2)
+            return 2
 
         self.count = self.count + 1
 
@@ -405,9 +422,11 @@ class TicTacToeBoard(tk.Frame):
             self.count = 1
             messagebox.showinfo('Tie', 'That is a tie , well played')
             TicTacToeBoard.board(self, self.pl1, self.pl2)
+            return 2
 
     def board(self, player1, player2):
         self.l = list('a b c d e f g h i'.split())
+        self.stopper = 0
         if self.match_no % 2 == 0:
             f = 'O'
             s = 'X'
@@ -445,6 +464,9 @@ class TicTacToeBoard(tk.Frame):
                                     ' game ;  Game :' + str(self.match_no - 1) + '   ' + str(pl1) + ' turn ')
         if self.match_no >= self.series + 2:
             series_end()
+            print('series end executed')
+            self.stopper = 2
+            return 0
 
         b00 = tk.Button(self, bg=self.theme.TicTacToe.odd_box, bd=0, width=24, height=10)
         b00.grid(row=2, column=0)
@@ -488,9 +510,17 @@ class TicTacToeBoard(tk.Frame):
                              activeforeground=self.theme.Font.text_color)
         end_game.grid(row=5, column=0, columnspan=3)
         end_game.bind('<ButtonRelease-1>', lambda event: endgame(event))
+        if(self.match_no%2 !=0)&(self.stopper!=2):
+            print('method inside board executed')
+            self.count = self.count + 1
+            TicTacToeBoard.computer(self, f, s, fgf, fgs, pl1, pl2)
 
-    def computer(self, r, c, f, s, fgf, fgs, pl1, pl2):
-        a = (r-2) * 3 + c
+
+
+    def computer(self, f, s, fgf, fgs, pl1, pl2):
+        print('f',f)
+        print('s',s)
+        print('count at computer',self.count)
         print(self.l)
         main_list = self.l
         compute = []
@@ -504,19 +534,22 @@ class TicTacToeBoard(tk.Frame):
         print('rowcol',row_col)
         r = (row_col//3) + 2
         c = row_col%3
-        if self.count%2 !=0:
+        a = (r - 2) * 3 + c
+        if (self.count%2 !=0)|(self.count==0):
             b = tk.Label(self, text=f, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgs,
                          bg=self.theme.Background.TicTacToe)
+            b.grid(row=r, column=c)
+            TicTacToeBoard.validate(self, r, c, pl1)
             self.winfo_toplevel().title('Tic-Tac-Toe    Series of ' + str(self.series) + ' game ;  Game :' +
                                         str(self.match_no - 1) + '   ' + str(pl2) + ' turn ')
+
         else:
             b = tk.Label(self, text=s, font=('Arial Bold', 105), width=2, height=1, bd=0, fg=fgf,
                              bg=self.theme.Background.TicTacToe)
+            b.grid(row=r, column=c)
+            TicTacToeBoard.validate(self, r, c, pl2)
             self.winfo_toplevel().title('Tic-Tac-Toe    Series of ' + str(self.series) + ' game ;  Game :' +
                                         str(self.match_no - 1) + '   ' + str(pl1) + ' turn ')
-        b.grid(row=r, column=c)
-
-
 
 
 
